@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         servicenow content enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  Improved customizability and user experience of servicenow courses
 // @match        https://nowlearning.servicenow.com/*
 // @match        https://rustici.nowlearning.servicenow.com/courses/default/*/index.html*
@@ -145,7 +145,7 @@
             .SettingsMenu {position: fixed; top: 0; z-index: 9999; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.5); font-family: arial}
             .SettingsMenu .SettingsMenuContent {margin: 30px auto; border-radius: 6px; width: 50vw; min-width: 300px; background-color: #fff; box-shadow: 0 5px 15px rgb(0 0 0 / 50%);}
             .SettingsMenu form {padding: 15px}
-            .SettingsMenu form label, .SettingsMenu p {display: block; margin: 10px auto; font-size: 16px}
+            .SettingsMenu form label {display: block; margin: 10px 0; font-size: 16px; width: fit-content}
             .SettingsMenu form button {margin-right: 10px; padding: 5px 30px; background-color: #284441; color: #fff; border: 1px solid transparent; border-radius: 3px; text-align: center; vertical-align: middle;}
             .SettingsMenu form button:hover {background-color: #152021}
             .SettingsMenuClose {border: none; background-color: transparent; margin: 15px; float: right}
