@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         servicenow content enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @description  Improved customizability and user experience of servicenow courses
 // @match        https://nowlearning.servicenow.com/*
 // @match        https://rustici.nowlearning.servicenow.com/courses/default/*/index.html*
@@ -44,7 +44,7 @@
                             } else {
                                 element.insertAdjacentHTML('beforeend', `
                                 <div style="position: absolute; right: 16rem; top: 0; z-index: 3">
-                                    <button class="SettingsMenuOpen" style="margin: 0.8rem 2rem; text-align: center">
+                                    <button class="SettingsMenuOpen" style="margin: 0.8rem 1rem; text-align: center; border-radius: 4px; background: hsla(0,0%,100%,.8); padding: 0 1rem">
                                         USERSCRIPT SETTINGS
                                     </button>
                                 </div>
