@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         servicenow content enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.5
 // @description  Improved customizability and user experience of servicenow courses
 // @match        https://nowlearning.servicenow.com/*
 // @match        https://rustici.nowlearning.servicenow.com/courses/default/*/index.html*
@@ -156,7 +156,7 @@
     }
 
     if (window.location.href.startsWith("https://nowlearning.servicenow.com/")) {
-        addSettingsMenu('.nav .dropdown-menu:not(#Certification, #Help)')
+        addSettingsMenu('.nav .dropdown-menu:not(#Certification, #Help, .notification-menu)')
 
         function updateStyle() {
             if (document.body.querySelector('.contentEnhancerStyle') === null) {document.body.insertAdjacentHTML('afterbegin', `<style class="contentEnhancerStyle"></style>`)}
