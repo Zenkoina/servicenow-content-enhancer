@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         servicenow content enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.8
+// @version      0.9
 // @description  Improved customizability and user experience of servicenow courses
 // @match        https://nowlearning.servicenow.com/*
 // @match        https://rustici.nowlearning.servicenow.com/courses/default/*/index.html*
@@ -170,10 +170,6 @@
         `)
 
         observer.observe(document.body, {childList: true, subtree: true})
-    }
-
-    if (window.location.href.startsWith("https://rustici.nowlearning.servicenow.com/courses/default/")) {
-        console.log(window.location.href.substring(59, 68).replace(/[0-9]/g, ""))
     }
 
     if (window.location.href.startsWith("https://nowlearning.servicenow.com/")) {
