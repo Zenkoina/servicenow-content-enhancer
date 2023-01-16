@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         servicenow content enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      0.6
 // @description  Improved customizability and user experience of servicenow courses
 // @match        https://nowlearning.servicenow.com/*
 // @match        https://rustici.nowlearning.servicenow.com/courses/default/*/index.html*
@@ -55,7 +55,7 @@
                                 document.body.insertAdjacentHTML('beforeend', `
                                 <div class="SettingsMenu">
                                     <div class="SettingsMenuContent">
-                                        <button class="SettingsMenuClose" style="font-size: 32px">×</button>
+                                        <button class="SettingsMenuClose">×</button>
                                         <form>
                                             <label>Expand course window: <input type="checkbox" for="ExpandContent"></label>
                                             <label>Remove animations: <input type="checkbox" for="RemoveAnimation"></label>
@@ -137,10 +137,10 @@
         })
         document.body.insertAdjacentHTML('afterbegin', `
         <style>
-            .hidden-xs .nav .dropdown-menu:not(#Certification, #Help) button {border: none; background-color: #fff; padding: 15px 25px; width: 100%; font-size: 16px; text-align: left}
-            .hidden-xs .nav .dropdown-menu:not(#Certification, #Help) button:hover {background-color: #f5f5f5}
-            .visible-xs .nav .dropdown-menu:not(#Certification, #Help) button {border: none; background-color: #293E40; color: #bdc0c4; padding: 5px 15px 5px 25px; width: 100%; font-size: 16px; text-align: left}
-            .visible-xs .nav .dropdown-menu:not(#Certification, #Help) button:hover {color: #fff}
+            .hidden-xs .nav .dropdown-menu:not(#Certification, #Help, .notification-menu) button {border: none; background-color: #fff; padding: 15px 25px; width: 100%; font-size: 16px; text-align: left}
+            .hidden-xs .nav .dropdown-menu:not(#Certification, #Help, .notification-menu) button:hover {background-color: #f5f5f5}
+            .visible-xs .nav .dropdown-menu:not(#Certification, #Help, .notification-menu) button {border: none; background-color: #293E40; color: #bdc0c4; padding: 5px 15px 5px 25px; width: 100%; font-size: 16px; text-align: left}
+            .visible-xs .nav .dropdown-menu:not(#Certification, #Help, .notification-menu) button:hover {color: #fff}
 
             .SettingsMenu {position: fixed; top: 0; z-index: 9999; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.5); font-family: arial}
             .SettingsMenu .SettingsMenuContent {margin: 30px auto; border-radius: 6px; width: 50vw; min-width: 300px; background-color: #fff; box-shadow: 0 5px 15px rgb(0 0 0 / 50%);}
@@ -148,7 +148,7 @@
             .SettingsMenu form label {display: block; margin: 10px 0; font-size: 16px; width: fit-content}
             .SettingsMenu form button {margin-right: 10px; padding: 5px 30px; background-color: #284441; color: #fff; border: 1px solid transparent; border-radius: 3px; text-align: center; vertical-align: middle;}
             .SettingsMenu form button:hover {background-color: #152021}
-            .SettingsMenuClose {border: none; background-color: transparent; margin: 15px; float: right}
+            .SettingsMenuClose {border: none; background-color: transparent; margin: 15px; float: right; font-size: 32px}
         </style>
         `)
 
@@ -220,5 +220,33 @@
         GM_addValueChangeListener('FirstBubbleColorSecondary', updateStyle)
 
         updateStyle()
+
+        const observer = new MutationObserver((mutationList) => {
+            mutationList.forEach((mutation) => {
+                mutation.addedNodes.forEach((element) => {
+                    if (element.nodeType === 1) {
+                        let matches = false
+
+                        for (let index = 0; index < element.querySelectorAll("*").length; index++) {
+                            const descendantElement = element.querySelectorAll("*")[index];
+
+                            if (descendantElement.matches('.labeled-graphic-canvas__image')) {
+                                matches = true
+                                element = descendantElement
+                                break
+                            }
+                        }
+
+                        if (element.matches('.labeled-graphic-canvas__image') || matches) {
+                            element.addEventListener('dblclick', (event) => {
+                                element.parentElement.querySelector('.map-item:first-child button').click()
+                            })
+                        }
+                    }
+                })
+            })
+        })
+
+        observer.observe(document.body, {childList: true, subtree: true})
     }
 })();
