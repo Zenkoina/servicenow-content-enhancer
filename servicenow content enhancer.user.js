@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         servicenow content enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.6
+// @version      0.8
 // @description  Improved customizability and user experience of servicenow courses
 // @match        https://nowlearning.servicenow.com/*
 // @match        https://rustici.nowlearning.servicenow.com/courses/default/*/index.html*
@@ -20,20 +20,17 @@
             mutationList.forEach((mutation) => {
                 mutation.addedNodes.forEach((element) => {
                     if (element.nodeType === 1) {
-                        let matches = false
-
                         for (let index = 0; index < element.querySelectorAll("*").length; index++) {
                             const descendantElement = element.querySelectorAll("*")[index];
 
                             if (descendantElement.matches(selector)) {
-                                matches = true
                                 element = descendantElement
                                 break
                             }
                         }
 
-                        if ((element.matches(selector) || matches) && !element.querySelector('.SettingsMenuOpen')) {
-                            if (window.location.href.startsWith("https://nowlearning.servicenow.com/")) {
+                        if (element.matches(selector) && !element.querySelector('.SettingsMenuOpen')) {
+                            if (selector === '.nav .dropdown-menu:not(#Certification, #Help, .notification-menu)') {
                                 element.insertAdjacentHTML('beforeend', `
                                 <li>
                                     <button class="SettingsMenuOpen">
@@ -41,13 +38,33 @@
                                     </button>
                                 </li>
                                 `)
-                            } else {
+                            } else if (selector === '.nav-control__wrapper') {
                                 element.insertAdjacentHTML('beforeend', `
                                 <div style="position: absolute; right: 16rem; top: 0; z-index: 3">
                                     <button class="SettingsMenuOpen" style="margin: 0.8rem 1rem; text-align: center; border-radius: 4px; background: hsla(0,0%,100%,.8); padding: 0 1rem">
                                         USERSCRIPT SETTINGS
                                     </button>
                                 </div>
+                                `)
+                            } else if (selector === '.page-view.page-view--visible') {
+                                element.insertAdjacentHTML('beforeend', `
+                                <style>
+                                    @media (max-width: 47.9375em){.page-view.page-view--visible>.SettingsMenuOpen {display: none !important}}
+                                    .page-view.page-view--visible>.SettingsMenuOpen {position: absolute; top: 1.5rem; right: 12rem; background: none; border: none; font-size: 1.2rem; font-weight: 700; letter-spacing: .03rem; color: #959fa5; z-index: 1000; cursor: pointer}
+                                </style>
+                                <button class="SettingsMenuOpen">
+                                    USERSCRIPT SETTINGS
+                                </button>
+                                `)
+                            } else if (selector === '.page__menu') {
+                                element.insertAdjacentHTML('beforeend', `
+                                <style>
+                                    @media (max-width: 47.9375em){.page__menu>.SettingsMenuOpen {display: block !important}}
+                                    .page__menu>.SettingsMenuOpen {position: absolute; top: 0; right: 12rem; background: none; border: none; font-size: 1.1rem; font-weight: 700; letter-spacing: .02rem; color: #959fa5; z-index: 1000; cursor: pointer; display: none; height: 5rem;}
+                                </style>
+                                <button class="SettingsMenuOpen">
+                                    USERSCRIPT SETTINGS
+                                </button>
                                 `)
                             }
 
@@ -147,12 +164,16 @@
             .SettingsMenu form {padding: 15px}
             .SettingsMenu form label {display: block; margin: 10px 0; font-size: 16px; width: fit-content}
             .SettingsMenu form button {margin-right: 10px; padding: 5px 30px; background-color: #284441; color: #fff; border: 1px solid transparent; border-radius: 3px; text-align: center; vertical-align: middle;}
-            .SettingsMenu form button:hover {background-color: #152021}
-            .SettingsMenuClose {border: none; background-color: transparent; margin: 15px; float: right; font-size: 32px}
+            .SettingsMenu form button:hover {background-color: #152021; cursor: pointer}
+            .SettingsMenuClose {border: none; background-color: transparent; margin: 15px; float: right; font-size: 32px; cursor: pointer}
         </style>
         `)
 
         observer.observe(document.body, {childList: true, subtree: true})
+    }
+
+    if (window.location.href.startsWith("https://rustici.nowlearning.servicenow.com/courses/default/")) {
+        console.log(window.location.href.substring(59, 68).replace(/[0-9]/g, ""))
     }
 
     if (window.location.href.startsWith("https://nowlearning.servicenow.com/")) {
@@ -175,7 +196,12 @@
 
         updateStyle()
     } else {
-        addSettingsMenu('.nav-control__wrapper')
+        if (window.location.href.substring(59, 63) === 'CITM') {
+            addSettingsMenu('.nav-control__wrapper')
+        } else if (window.location.href.substring(59, 62) === 'LES') {
+            addSettingsMenu('.page-view.page-view--visible')
+            addSettingsMenu('.page__menu')
+        }
 
         function updateStyle() {
             if (document.body.querySelector('.contentEnhancerStyle') === null) {document.body.insertAdjacentHTML('afterbegin', `<style class="contentEnhancerStyle"></style>`)}
