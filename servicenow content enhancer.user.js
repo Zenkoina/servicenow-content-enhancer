@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         servicenow content enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.9
+// @version      0.10
 // @description  Improved customizability and user experience of servicenow courses
 // @match        https://nowlearning.servicenow.com/*
 // @match        https://rustici.nowlearning.servicenow.com/courses/default/*/index.html*
@@ -247,21 +247,19 @@
             mutationList.forEach((mutation) => {
                 mutation.addedNodes.forEach((element) => {
                     if (element.nodeType === 1) {
-                        let matches = false
-
                         for (let index = 0; index < element.querySelectorAll("*").length; index++) {
                             const descendantElement = element.querySelectorAll("*")[index];
 
                             if (descendantElement.matches('.labeled-graphic-canvas__image')) {
-                                matches = true
                                 element = descendantElement
                                 break
                             }
                         }
 
-                        if (element.matches('.labeled-graphic-canvas__image') || matches) {
-                            element.addEventListener('dblclick', (event) => {
-                                element.parentElement.querySelector('.map-item:first-child button').click()
+                        if (element.matches('.labeled-graphic-canvas__image')) {
+                            element.addEventListener('click', (event) => {
+                                if (element.parentElement.querySelector('.bubble--active')) {return}
+                                setTimeout(() => {element.parentElement.querySelector('.map-item:first-child button').click()})
                             })
                         }
                     }
