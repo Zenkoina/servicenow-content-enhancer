@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         servicenow content enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.10
+// @version      0.11
 // @description  Improved customizability and user experience of servicenow courses
 // @match        https://nowlearning.servicenow.com/*
 // @match        https://rustici.nowlearning.servicenow.com/courses/default/*/index.html*
@@ -19,14 +19,9 @@
         const observer = new MutationObserver((mutationList) => {
             mutationList.forEach((mutation) => {
                 mutation.addedNodes.forEach((element) => {
-                    if (element.nodeType === 1) {
-                        for (let index = 0; index < element.querySelectorAll("*").length; index++) {
-                            const descendantElement = element.querySelectorAll("*")[index];
-
-                            if (descendantElement.matches(selector)) {
-                                element = descendantElement
-                                break
-                            }
+                    if (element.nodeType === Node.ELEMENT_NODE) {
+                        if (element.querySelector(selector)) {
+                            element = element.querySelector(selector)
                         }
 
                         if (element.matches(selector) && !element.querySelector('.SettingsMenuOpen')) {
@@ -244,19 +239,16 @@
         updateStyle()
 
         const observer = new MutationObserver((mutationList) => {
+            const selector = '.labeled-graphic-canvas__image'
+
             mutationList.forEach((mutation) => {
                 mutation.addedNodes.forEach((element) => {
-                    if (element.nodeType === 1) {
-                        for (let index = 0; index < element.querySelectorAll("*").length; index++) {
-                            const descendantElement = element.querySelectorAll("*")[index];
-
-                            if (descendantElement.matches('.labeled-graphic-canvas__image')) {
-                                element = descendantElement
-                                break
-                            }
+                    if (element.nodeType === Node.ELEMENT_NODE) {
+                        if (element.querySelector(selector)) {
+                            element = element.querySelector(selector)
                         }
 
-                        if (element.matches('.labeled-graphic-canvas__image')) {
+                        if (element.matches(selector)) {
                             element.addEventListener('click', (event) => {
                                 if (element.parentElement.querySelector('.bubble--active')) {return}
                                 setTimeout(() => {element.parentElement.querySelector('.map-item:first-child button').click()})
