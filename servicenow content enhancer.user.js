@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         servicenow content enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.11
+// @version      0.12
 // @description  Improved customizability and user experience of servicenow courses
 // @match        https://nowlearning.servicenow.com/*
 // @match        https://rustici.nowlearning.servicenow.com/courses/default/*/index.html*
@@ -121,8 +121,8 @@
                                     GM_setValue('RemoveBubbleFadeIn', false)
                                     GM_setValue('RemoveOverflowFade', false)
                                     GM_setValue('RemoveLessonTransition', false)
-                                    GM_setValue('FirstBubbleColorPrimary', '#ffffff')
-                                    GM_setValue('FirstBubbleColorSecondary', '#72d64c')
+                                    GM_setValue('FirstBubbleColorPrimary', '')
+                                    GM_setValue('FirstBubbleColorSecondary', '')
 
                                     for (let index = 0; index < document.querySelectorAll('.SettingsMenu form input').length; index++) {
                                         const input = document.querySelectorAll('.SettingsMenu form input')[index];
@@ -189,7 +189,7 @@
     } else {
         if (window.location.href.substring(59, 63) === 'CITM') {
             addSettingsMenu('.nav-control__wrapper')
-        } else if (window.location.href.substring(59, 62) === 'LES') {
+        } else if (window.location.href.substring(59, 62) === 'LES' || window.location.href.substring(59, 67) === 'LXP-COUR') {
             addSettingsMenu('.page-view.page-view--visible')
             addSettingsMenu('.page__menu')
         }
