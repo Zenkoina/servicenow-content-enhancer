@@ -1,18 +1,30 @@
 // ==UserScript==
 // @name         servicenow content enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.12
+// @version      0.13
 // @description  Improved customizability and user experience of servicenow courses
 // @match        https://nowlearning.servicenow.com/*
 // @match        https://rustici.nowlearning.servicenow.com/courses/default/*/index.html*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_deleteValue
 // @grant        GM_addValueChangeListener
 // ==/UserScript==
 
 (function() {
     'use strict';
+
+    //Constants
+    const Defaults = {
+        'ExpandContent': true,
+        'RemoveAnimation': true,
+        'RemoveBubbleFadeIn': true,
+        'RemoveOverflowFade': true,
+        'RemoveLessonTransition': true,
+        'FirstBubbleColorPrimary': '#d64c4c',
+        'FirstBubbleColorSecondary': '#ffffff'
+    }
 
     //Code
     function addSettingsMenu(selector) {
@@ -85,11 +97,9 @@
 
                                 function updateInputValue(input) {
                                     if (input.type === 'checkbox') {
-                                        input.checked = GM_getValue(input.getAttribute('for'), true)
-                                    } else if (input.getAttribute('for') === 'FirstBubbleColorPrimary') {
-                                        input.value = GM_getValue(input.getAttribute('for'), '#d64c4c')
-                                    } else if (input.getAttribute('for') === 'FirstBubbleColorSecondary') {
-                                        input.value = GM_getValue(input.getAttribute('for'), '#ffffff')
+                                        input.checked = GM_getValue(input.getAttribute('for'), Defaults[input.getAttribute('for')])
+                                    } else if (input.type === 'color') {
+                                        input.value = GM_getValue(input.getAttribute('for'), Defaults[input.getAttribute('for')])
                                     }
                                 }
 
@@ -99,13 +109,13 @@
 
                                 document.querySelector('.SettingsMenu .SettingsMenuDefault').addEventListener('click', (event) => {
                                     event.preventDefault()
-                                    GM_setValue('ExpandContent', true)
-                                    GM_setValue('RemoveAnimation', true)
-                                    GM_setValue('RemoveBubbleFadeIn', true)
-                                    GM_setValue('RemoveOverflowFade', true)
-                                    GM_setValue('RemoveLessonTransition', true)
-                                    GM_setValue('FirstBubbleColorPrimary', '#d64c4c')
-                                    GM_setValue('FirstBubbleColorSecondary', '#ffffff')
+                                    GM_deleteValue('ExpandContent')
+                                    GM_deleteValue('RemoveAnimation')
+                                    GM_deleteValue('RemoveBubbleFadeIn')
+                                    GM_deleteValue('RemoveOverflowFade')
+                                    GM_deleteValue('RemoveLessonTransition')
+                                    GM_deleteValue('FirstBubbleColorPrimary')
+                                    GM_deleteValue('FirstBubbleColorSecondary')
 
                                     for (let index = 0; index < document.querySelectorAll('.SettingsMenu form input').length; index++) {
                                         const input = document.querySelectorAll('.SettingsMenu form input')[index];
@@ -174,7 +184,7 @@
             if (document.body.querySelector('.contentEnhancerStyle') === null) {document.body.insertAdjacentHTML('afterbegin', `<style class="contentEnhancerStyle"></style>`)}
 
             document.body.querySelector('.contentEnhancerStyle').innerHTML = `
-            ${GM_getValue("ExpandContent", true) ? `
+            ${GM_getValue("ExpandContent", Defaults.ExpandContent) ? `
                 body.modal-open:has(.rustici-modal-window iframe) {overflow-y: hidden !important}
                 .rustici-modal-window {overflow-y: hidden !important}
                 .rustici-modal-window .modal-dialog {margin: 0 !important;width: 100vw !important;height: 100vh !important}
@@ -196,25 +206,27 @@
 
         function updateStyle() {
             if (document.body.querySelector('.contentEnhancerStyle') === null) {document.body.insertAdjacentHTML('afterbegin', `<style class="contentEnhancerStyle"></style>`)}
+            const FirstBubbleColorPrimary = GM_getValue('FirstBubbleColorPrimary', Defaults.FirstBubbleColorPrimary)
+            const FirstBubbleColorSecondary = GM_getValue('FirstBubbleColorSecondary', Defaults.FirstBubbleColorSecondary)
 
             document.body.querySelector('.contentEnhancerStyle').innerHTML = `
-            ${GM_getValue("RemoveAnimation", true) ? `
+            ${GM_getValue("RemoveAnimation", Defaults.RemoveAnimation) ? `
                 .animated {animation-duration: 0s !important;opacity: 1 !important}
                 .labeled-graphic-canvas {transition-duration: 0s !important}
             ` : ''}
 
-            ${GM_getValue("RemoveBubbleFadeIn", true) ? `
+            ${GM_getValue("RemoveBubbleFadeIn", Defaults.RemoveBubbleFadeIn) ? `
                 .labeled-graphic-marker {transform: scale(1) !important; opacity: 1 !important; box-shadow: none !important}
                 .labeled-graphic-marker--visible {transition-delay: 0s !important}
                 .labeled-graphic-marker__pin:after {content: none !important}
             ` : ''}
 
-            ${GM_getValue("RemoveOverflowFade", true) ? `
+            ${GM_getValue("RemoveOverflowFade", Defaults.RemoveOverflowFade) ? `
                 .bubble__body--has-overflow:after {content: none !important;}
                 .flashcard-side__content--long-overflow-bottom:after {content: none !important}
             ` : ''}
 
-            ${GM_getValue("RemoveLessonTransition", true) ? `
+            ${GM_getValue("RemoveLessonTransition", Defaults.RemoveLessonTransition) ? `
                 .page__wrapper {animation-duration: 0s !important}
                 .page__content {transition-duration: 0s !important}
                 .page-transition-back-leave {animation-duration: 0s !important}
@@ -223,10 +235,12 @@
                 .page-transition-enter {animation-duration: 0s !important}
             ` : ''}
 
-            .labeled-graphic-canvas__figure .map-item:first-child .labeled-graphic-marker__pin {background-color: ${GM_getValue("FirstBubbleColorPrimary", '#d64c4c')} !important; color: ${GM_getValue("FirstBubbleColorSecondary", '#ffffff')} !important}
-            .labeled-graphic-canvas__figure .map-item:first-child button:not(.labeled-graphic-marker--active):hover .labeled-graphic-marker__pin:before {border-color: ${GM_getValue("FirstBubbleColorSecondary", '#ffffff')} !important}
-            .labeled-graphic-canvas__figure .map-item:first-child .labeled-graphic-marker--active .labeled-graphic-marker__pin {background-color: ${GM_getValue("FirstBubbleColorSecondary", '#ffffff')} !important; color: ${GM_getValue("FirstBubbleColorPrimary", '#d64c4c')} !important}
-            .labeled-graphic-canvas__figure .map-item:first-child .labeled-graphic-marker--active .labeled-graphic-marker__pin:before {border-color: ${GM_getValue("FirstBubbleColorPrimary", '#d64c4c')} !important}`
+            ${(FirstBubbleColorPrimary || FirstBubbleColorSecondary) ? `
+                .labeled-graphic-canvas__figure .map-item:first-child .labeled-graphic-marker__pin {${FirstBubbleColorPrimary ? `background-color: ${FirstBubbleColorPrimary} !important; ` : ''}${FirstBubbleColorSecondary ? `color: ${FirstBubbleColorSecondary} !important` : ''}}
+                ${FirstBubbleColorSecondary ? `.labeled-graphic-canvas__figure .map-item:first-child button:not(.labeled-graphic-marker--active):hover .labeled-graphic-marker__pin:before {border-color: ${FirstBubbleColorSecondary} !important}` : ''}
+                .labeled-graphic-canvas__figure .map-item:first-child .labeled-graphic-marker--active .labeled-graphic-marker__pin {${FirstBubbleColorSecondary ? `background-color: ${FirstBubbleColorSecondary} !important; ` : ''}${FirstBubbleColorPrimary ? `color: ${FirstBubbleColorPrimary} !important` : ''}}
+                ${FirstBubbleColorPrimary ? `.labeled-graphic-canvas__figure .map-item:first-child .labeled-graphic-marker--active .labeled-graphic-marker__pin:before {border-color: ${FirstBubbleColorPrimary} !important}` : ''}
+            ` : ''}`
         }
 
         GM_addValueChangeListener('RemoveAnimation', updateStyle)
