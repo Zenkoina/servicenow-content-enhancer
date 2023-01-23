@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         servicenow content enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.13
+// @version      0.14
 // @description  Improved customizability and user experience of servicenow courses
 // @match        https://nowlearning.servicenow.com/*
 // @match        https://rustici.nowlearning.servicenow.com/courses/default/*/index.html*
@@ -236,10 +236,10 @@
             ` : ''}
 
             ${(FirstBubbleColorPrimary || FirstBubbleColorSecondary) ? `
-                .labeled-graphic-canvas__figure .map-item:first-child .labeled-graphic-marker__pin {${FirstBubbleColorPrimary ? `background-color: ${FirstBubbleColorPrimary} !important; ` : ''}${FirstBubbleColorSecondary ? `color: ${FirstBubbleColorSecondary} !important` : ''}}
+                .labeled-graphic-canvas__figure .map-item:first-child button:not(.labeled-graphic-marker--active) .labeled-graphic-marker__pin {${FirstBubbleColorPrimary ? `background-color: ${FirstBubbleColorPrimary} !important; ` : ''}${FirstBubbleColorSecondary ? `color: ${FirstBubbleColorSecondary} !important` : ''}}
                 ${FirstBubbleColorSecondary ? `.labeled-graphic-canvas__figure .map-item:first-child button:not(.labeled-graphic-marker--active):hover .labeled-graphic-marker__pin:before {border-color: ${FirstBubbleColorSecondary} !important}` : ''}
-                .labeled-graphic-canvas__figure .map-item:first-child .labeled-graphic-marker--active .labeled-graphic-marker__pin {${FirstBubbleColorSecondary ? `background-color: ${FirstBubbleColorSecondary} !important; ` : ''}${FirstBubbleColorPrimary ? `color: ${FirstBubbleColorPrimary} !important` : ''}}
-                ${FirstBubbleColorPrimary ? `.labeled-graphic-canvas__figure .map-item:first-child .labeled-graphic-marker--active .labeled-graphic-marker__pin:before {border-color: ${FirstBubbleColorPrimary} !important}` : ''}
+                .labeled-graphic-canvas__figure .map-item:first-child button.labeled-graphic-marker--active .labeled-graphic-marker__pin {${FirstBubbleColorSecondary ? `background-color: ${FirstBubbleColorSecondary} !important; ` : ''}${FirstBubbleColorPrimary ? `color: ${FirstBubbleColorPrimary} !important` : ''}}
+                ${FirstBubbleColorPrimary ? `.labeled-graphic-canvas__figure .map-item:first-child button.labeled-graphic-marker--active .labeled-graphic-marker__pin:before {border-color: ${FirstBubbleColorPrimary} !important}` : ''}
             ` : ''}`
         }
 
