@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         servicenow content enhancer
 // @namespace    http://tampermonkey.net/
-// @version      0.14
+// @version      0.15
 // @description  Improved customizability and user experience of servicenow courses
 // @match        https://nowlearning.servicenow.com/*
 // @match        https://rustici.nowlearning.servicenow.com/courses/default/*/index.html*
@@ -27,7 +27,7 @@
     }
 
     //Code
-    function addSettingsMenu(selector) {
+    function addSettingsMenu(selector, disconnectAfterFound) {
         const observer = new MutationObserver((mutationList) => {
             mutationList.forEach((mutation) => {
                 mutation.addedNodes.forEach((element) => {
@@ -45,32 +45,10 @@
                                     </button>
                                 </li>
                                 `)
-                            } else if (selector === '.nav-control__wrapper') {
-                                element.insertAdjacentHTML('beforeend', `
-                                <div style="position: absolute; right: 16rem; top: 0; z-index: 3">
-                                    <button class="SettingsMenuOpen" style="margin: 0.8rem 1rem; text-align: center; border-radius: 4px; background: hsla(0,0%,100%,.8); padding: 0 1rem">
-                                        USERSCRIPT SETTINGS
-                                    </button>
-                                </div>
-                                `)
-                            } else if (selector === '.page-view.page-view--visible') {
-                                element.insertAdjacentHTML('beforeend', `
-                                <style>
-                                    @media (max-width: 47.9375em){.page-view.page-view--visible>.SettingsMenuOpen {display: none !important}}
-                                    .page-view.page-view--visible>.SettingsMenuOpen {position: absolute; top: 1.5rem; right: 12rem; background: none; border: none; font-size: 1.2rem; font-weight: 700; letter-spacing: .03rem; color: #959fa5; z-index: 1000; cursor: pointer}
-                                </style>
-                                <button class="SettingsMenuOpen">
-                                    USERSCRIPT SETTINGS
-                                </button>
-                                `)
-                            } else if (selector === '.page__menu') {
-                                element.insertAdjacentHTML('beforeend', `
-                                <style>
-                                    @media (max-width: 47.9375em){.page__menu>.SettingsMenuOpen {display: block !important}}
-                                    .page__menu>.SettingsMenuOpen {position: absolute; top: 0; right: 12rem; background: none; border: none; font-size: 1.1rem; font-weight: 700; letter-spacing: .02rem; color: #959fa5; z-index: 1000; cursor: pointer; display: none; height: 5rem;}
-                                </style>
-                                <button class="SettingsMenuOpen">
-                                    USERSCRIPT SETTINGS
+                            } else if (selector === '.rustici-modal-window .modal-content div') {
+                                element.querySelector('.rustici-close-btn').insertAdjacentHTML('afterend', `
+                                <button class="SettingsMenuOpen btn pull-right" style="height: 36px; font-weight: normal">
+                                    Userscript Settings
                                 </button>
                                 `)
                             }
@@ -151,7 +129,9 @@
                                     })
                                 }
                             })
-                            observer.disconnect()
+                            if (disconnectAfterFound) {
+                                observer.disconnect()
+                            }
                         }
                     }
                 })
@@ -178,7 +158,8 @@
     }
 
     if (window.location.href.startsWith("https://nowlearning.servicenow.com/")) {
-        addSettingsMenu('.nav .dropdown-menu:not(#Certification, #Help, .notification-menu)')
+        addSettingsMenu('.nav .dropdown-menu:not(#Certification, #Help, .notification-menu)', true)
+        addSettingsMenu('.rustici-modal-window .modal-content div', false)
 
         function updateStyle() {
             if (document.body.querySelector('.contentEnhancerStyle') === null) {document.body.insertAdjacentHTML('afterbegin', `<style class="contentEnhancerStyle"></style>`)}
@@ -197,13 +178,6 @@
 
         updateStyle()
     } else {
-        if (window.location.href.substring(59, 63) === 'CITM') {
-            addSettingsMenu('.nav-control__wrapper')
-        } else if (window.location.href.substring(59, 62) === 'LES' || window.location.href.substring(59, 67) === 'LXP-COUR') {
-            addSettingsMenu('.page-view.page-view--visible')
-            addSettingsMenu('.page__menu')
-        }
-
         function updateStyle() {
             if (document.body.querySelector('.contentEnhancerStyle') === null) {document.body.insertAdjacentHTML('afterbegin', `<style class="contentEnhancerStyle"></style>`)}
             const FirstBubbleColorPrimary = GM_getValue('FirstBubbleColorPrimary', Defaults.FirstBubbleColorPrimary)
@@ -252,7 +226,7 @@
 
         updateStyle()
 
-        const observer = new MutationObserver((mutationList) => {
+        new MutationObserver((mutationList) => {
             const selector = '.labeled-graphic-canvas__image'
 
             mutationList.forEach((mutation) => {
@@ -271,8 +245,6 @@
                     }
                 })
             })
-        })
-
-        observer.observe(document.body, {childList: true, subtree: true})
+        }).observe(document.body, {childList: true, subtree: true})
     }
 })();
